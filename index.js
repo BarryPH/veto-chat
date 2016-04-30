@@ -11,6 +11,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('./public'));
 
 
+app.disable('x-powered-by');
+app.use(function(req, res, next) {
+	res.header({
+		'X-Frame-Options': 'deny',
+		'X-XSS-Protection': '1; mode=block',
+		'X-Content-Type-Options': 'nosniff',
+	});
+	next();
+});
+
+
 var rooms = [];
 app.use('/', require('./routes/index')(io, rooms));
 require('./socketio.js')(io, rooms);
