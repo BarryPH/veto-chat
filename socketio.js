@@ -119,6 +119,7 @@ io.on('connection', function(socket) {
 			yes: 1,
 			no: 0
 		};
+		poll.createdBy = socket.username;
 
 		PollsManager.polls.push(poll);
 

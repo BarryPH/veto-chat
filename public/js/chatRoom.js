@@ -147,6 +147,10 @@ window.addEventListener('load', function() {
 		yesButton.className = 'yes';
 		yesButton.textContent = poll.votes.yes;
 
+		if (poll.createdBy === socket.username) {
+			yesButton.classList.add('selected');
+		}
+
 		var noButton = document.createElement('button');
 		noButton.className = 'no';
 		noButton.textContent = poll.votes.no;
