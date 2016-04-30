@@ -1,0 +1,41 @@
+@font-face {
+	font-family: 'Open Sans';
+	src: url('/font/OpenSans-Regular.ttf');
+}
+
+*, *:before, *:after {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	font-family: 'Open Sans';
+	color: #fff;
+	background-color: #222;
+}
+
+header {
+	font-size: 1.5em;
+}
+
+hr {
+	border: 0;
+	border-top: 1px solid #00afff;
+	width: 700px;
+}
+
+input, button {
+	padding: 7px;
+	border-radius: 0;
+}
+
+input {
+	border: 1px solid #aaa;
+}
+
+button {
+	color: #fff;
+	background-color: #19ff33;
+	border: 0;
+	cursor: pointer;
+}

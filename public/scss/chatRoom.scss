@@ -1,0 +1,236 @@
+$primaryColor: #ff7e00;
+$darkbackground: #060613;
+$darkbackground: #fff;
+$siteHeaderHeight: 85px;
+$sidebarWidth: 300px;
+
+
+body {
+	background-color: #f5f5f5 !important;
+	color: rgba(0, 0, 0, 0.7) !important;
+}
+
+#siteHeader {
+	width: 100%;
+	height: $siteHeaderHeight;
+	overflow: hidden;
+}
+
+#logo, #headerBody {
+	display: inline-block;
+	height: 100%;
+	line-height: $siteHeaderHeight;
+}
+
+#logo {
+	width: $sidebarWidth;
+	vertical-align: top;
+	text-align: center;
+	background-color: $primaryColor;
+	color: #fff;
+	font-size: 2em;
+	font-weight: bold;
+}
+
+#headerBody {
+	position: relative;
+	width: calc(100% - 300px);
+	background-color: $darkbackground;
+	border-bottom: 1px solid #aaa;
+}
+
+#headerBody header {
+	display: inline-block;
+	margin-left: 25px;
+	margin-right: 200px;
+	font-size: 2em;
+}
+
+#headerBody button {
+	position: absolute;
+	top: 25px;
+	right: 25px;
+	height: 40px;
+	padding: 0 20px;
+	font-size: 1.5em;
+}
+
+
+/*
+ * BODY
+ */
+
+#siteBody {
+	width: 100%;
+	height: calc(100vh - #{$siteHeaderHeight});
+}
+
+
+/*
+ * VOTES
+ */
+
+#sidebar, #chat {
+	height: 100%;
+	display: inline-block;
+	vertical-align: top;
+}
+
+#sidebar {
+	width: $sidebarWidth;
+	overflow: hidden;
+	background-color: $darkbackground;
+}
+
+#occupantCount {
+	color: #000;
+	opacity: 0.7;
+}
+
+.sidebarItem {
+	height: calc(50% - 20px);
+	margin-top: 20px;
+}
+
+.sidebarItem > header {
+	height: 50px;
+}
+
+.sidebarItem > header, #occupantList, #votes {
+	padding: 0 20px;
+}
+
+#occupantList, #votes {
+	overflow-y: auto;
+	height: calc(100% - 50px);
+}
+
+#occupantList {
+	padding-right: 15px;
+}
+
+.occupant {
+	margin-top: 7px;
+}
+
+#usernameForm {
+	position: relative;
+}
+
+#usernameForm input {
+	width: 100%;
+	border: 0;
+	border-bottom: 1px solid #aaa;
+	padding: 5px 0;
+	padding-right: 110px;
+}
+
+#usernameForm button {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	padding: 0;
+	height: 100%;
+	cursor: pointer;
+	font-weight: bold;
+	background-color: transparent;
+	color: #19ff33;
+	border-bottom: 1px solid #19ff33;
+}
+
+.vote {
+	margin-top: 15px;
+	background-color: #eee;
+	font-size: 1.3em;
+}
+
+.vote .title, .vote .button {
+	padding: 15px;
+}
+
+.vote.successfull {
+	border: 1px solid #00ff00;
+}
+
+.vote.unsuccessfull {
+	border: 1px solid #ff0000;
+}
+
+.vote .title {
+	word-wrap: break-word;
+	border-bottom: 1px solid #fff;
+}
+
+.vote button {
+	width: 50%;
+	font-size: inherit;
+	cursor: pointer;
+}
+
+.vote button.yes {
+	background-color: rgba(0, 255, 0, 0.6);
+}
+
+.vote button.no {
+	background-color: rgba(255, 0, 0, 0.6);
+}
+
+.vote button.yes:hover, .vote button.yes.selected {
+	background-color: rgba(0, 255, 0, 1);
+}
+
+.vote button.no:hover, .vote button.no.selected {
+	background-color: rgba(255, 0, 0, 1);
+}
+
+
+/*
+ * CHAT
+ */
+
+#chat {
+	position: relative;
+	width: calc(100% - #{$sidebarWidth});
+	border-left: 1px solid #aaa;
+	border-right: 1px solid #aaa;
+}
+
+#messages {
+	width: 100%;
+	color: #000;
+	height: calc(100% - 55px);
+	overflow-y: auto;
+}
+
+#messages div {
+	padding: 5px 10px;
+	margin: 10px;
+	border: 1px solid #aaa;
+	background-color: #fff;
+}
+
+#messages .prefix, .serverMessage {
+	color: #ff7e00;
+}
+
+#chat form {
+	position: absolute;
+	bottom: 0;
+	z-index: 1;
+	width: 100%;
+}
+
+#chat input, #chat button {
+	font-size: 1em;
+	padding: 5px;
+}
+
+#chat input {
+	margin: 10px;
+	width: 80%;
+}
+
+#chat button {
+	width: calc(20% - 30px);
+	margin: 10px 10px 10px 0;
+}	

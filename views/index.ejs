@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<% include layoutHead.ejs %>
+
+	<title>Home | Veto Chat</title>
+	<link rel='stylesheet' href='/css/index.css'>
+</head>
+<body>
+	<section>
+		<header id='logo'>Veto Chat</header>
+		<div class='subtext'>
+			Create a chat room for you and your friends. No mess.
+		</div>
+
+		<div id='forms'>
+			<form method='POST' action='/create'>
+				<header>Create a room!</header>
+				<input type='text' placeholder='Roomname (optional)' name='roomName'>
+				<button type='submit'>Create Room</button>
+			</form>
+
+			<form method='POST' action='/join'>
+				<header>Or join one</header>
+				<input type='text' placeholder='Roomname' name='roomName'>
+				<button type='submit'>Join Room</button>
+			</form>
+		</div>
+	</section>
+</body>
