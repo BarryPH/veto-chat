@@ -1,7 +1,7 @@
 var router = require('express').Router();
 
 
-module.exports = function(io, rooms) {
+module.exports = function(app, io, rooms) {
 
 function roomFromName(name) {
 	for (var room of rooms) {
@@ -101,6 +101,6 @@ router.route('/chatRoom/:roomId')
 		});
 	});
 
-return router;
+app.use('/', router);
 
 };

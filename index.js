@@ -23,7 +23,7 @@ app.use(function(req, res, next) {
 
 
 var rooms = [];
-app.use('/', require('./routes/index')(io, rooms));
+require('./routes/index')(app, io, rooms);
 require('./socketio.js')(io, rooms);
 
 
