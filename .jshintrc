@@ -1,6 +1,7 @@
 {
 	"esversion": 6,
 	"node": true,
+	"mocha": true,
 	"globalstrict": true,
 	"eqeqeq": true
 }

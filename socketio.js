@@ -81,14 +81,14 @@ io.on('connection', function(socket) {
 	clients.push(username);
 
 	
-	function disconnectUser() {
+	function emitUserDisconnect() {
 		socket.leave(roomId);
-		io.to(roomId).emit('userDisconnected', socket.username);
+		io.to(roomId).emit('userDisconnect', socket.username);
 	}
 
-	function emitUserMessage(text) {
+	function emitUserMessage(message) {
 		io.to(roomId).emit('userMessage', {
-			text: text,
+			message: message,
 			sender: socket.username
 		});
 	}
@@ -112,7 +112,9 @@ io.on('connection', function(socket) {
 	}
 
 	function emitNewPoll(poll) {
-		if (PollsManager.exists(roomId)) {
+		if (!poll ||
+			PollsManager.exists(roomId)) {
+			socket.emit('newPoll', null);
 			return;
 		}
 
@@ -142,6 +144,7 @@ io.on('connection', function(socket) {
 		var notInitialVote = previousVote !== undefined && vote !== previousVote;
 
 		if (vote === previousVote) {
+			socket.emit('vote', null);
 			return;
 		} else if (vote) {
 			socket.vote = true;
@@ -170,8 +173,8 @@ io.on('connection', function(socket) {
 	function emitUsernameChange(username) {
 		var clients = roomClientNames(roomId);
 
-		// TODO: notify user if username is taken
 		if (username === '' || usernameTaken(username, clients)) {
+			socket.emit('usernameChanged', null);
 			return;
 		}
 
@@ -184,11 +187,11 @@ io.on('connection', function(socket) {
 		});
 	}
 
-	socket.on('disconnect', disconnectUser);
+	socket.on('disconnect', emitUserDisconnect);
 	socket.on('userMessage', emitUserMessage);
 	socket.on('newPoll', emitNewPoll);
 	socket.on('vote', emitUserVote);
-	socket.on('changeUsername', emitUsernameChange);
+	socket.on('usernameChange', emitUsernameChange);
 });
 
 return;

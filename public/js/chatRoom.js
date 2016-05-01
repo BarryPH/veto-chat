@@ -105,8 +105,8 @@ window.addEventListener('load', function() {
 	}
 
 
-	function addUserMessage(message) {
-		addMessage(message.text, false, message.sender);
+	function addUserMessage(data) {
+		addMessage(data.message, false, data.sender);
 	}
 
 	function handleUserConnect(client) {
@@ -135,6 +135,10 @@ window.addEventListener('load', function() {
 
 
 	function addPoll(poll) {
+		if (poll === null) {
+			return;
+		}
+
 		var votesWrapperDiv = document.createElement('div');
 		votesWrapperDiv.className = 'voteWrapper';
 
@@ -183,6 +187,10 @@ window.addEventListener('load', function() {
 
 
 	function updateVotes(vote) {
+		if (vote === null) {
+			return;
+		}
+
 		if (vote.value) {
 			if (vote.notInitialVote) {
 				elements.noVoteCounter.textContent = parseInt(elements.noVoteCounter.textContent, 10) - 1;
@@ -203,7 +211,11 @@ window.addEventListener('load', function() {
 
 
 	function usernameChanged(data) {
-		var {oldUsername, username} = data;
+		if (data === null) {
+			return;
+		}
+
+		var {success, oldUsername, username} = data;
 
 		if (oldUsername === socket.username) {
 			socket.username = username;
@@ -229,7 +241,7 @@ window.addEventListener('load', function() {
 	socket.on('setup', setup);
 	socket.on('userMessage', addUserMessage);
 	socket.on('userConnected', handleUserConnect);
-	socket.on('userDisconnected', handleUserDisconnect);
+	socket.on('userDisconnect', handleUserDisconnect);
 	socket.on('newPoll', addPoll);
 	socket.on('pollResults', setPollResults);
 	socket.on('vote', updateVotes);
@@ -300,7 +312,7 @@ window.addEventListener('load', function() {
 		event.preventDefault();
 
 		var username = elements.usernameForm.username.value;
-		socket.emit('changeUsername', username);
+		socket.emit('usernameChange', username);
 	}
 
 
