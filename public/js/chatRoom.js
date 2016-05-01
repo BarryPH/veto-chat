@@ -1,3 +1,8 @@
+'use strict';
+
+/*jslint browser: true */
+/*global window, io, swal, roomInfo */
+
 window.addEventListener('load', function() {
 	var socket = io.connect(window.location.origin, {
 		query: 'roomId=' + roomInfo.roomId + '&roomName=' + roomInfo.roomName
@@ -115,16 +120,16 @@ window.addEventListener('load', function() {
 	}
 
 
-	function voteYes() {
-		this.classList.add('selected');
-		this.nextElementSibling.classList.remove('selected');
+	function voteYes(event) {
+		event.currentTarget.classList.add('selected');
+		event.currentTarget.nextElementSibling.classList.remove('selected');
 		socket.emit('vote', true);
 	}
 
 
-	function voteNo() {
-		this.classList.add('selected');
-		this.previousElementSibling.classList.remove('selected');
+	function voteNo(event) {
+		event.currentTarget.classList.add('selected');
+		event.currentTarget.previousElementSibling.classList.remove('selected');
 		socket.emit('vote', false);
 	}
 
@@ -139,7 +144,7 @@ window.addEventListener('load', function() {
 		var titleDiv = document.createElement('div');
 		titleDiv.className = 'title';
 
-		if (poll.type == 'roomName') {
+		if (poll.type === 'roomName') {
 			titleDiv.textContent = 'Change room name to: ' + poll.name;
 		}
 

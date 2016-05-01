@@ -1,5 +1,6 @@
-var router = require('express').Router();
+'use strict';
 
+var router = require('express').Router();
 
 module.exports = function(app, io, rooms) {
 
