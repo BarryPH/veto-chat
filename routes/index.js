@@ -2,24 +2,11 @@
 
 var router = require('express').Router();
 
-module.exports = function(app, io, rooms) {
-
-function roomFromName(name) {
-	for (var room of rooms) {
-		if (room.name === name) {
-			return room;
-		}
+module.exports = function(app, io, db) {
+function checkError(err) {
+	if (err) {
+		throw err;
 	}
-	return null;
-}
-
-function roomFromId(id) {
-	for (var room of rooms) {
-		if (room.id === id) {
-			return room;
-		}
-	}
-	return null;
 }
 
 var s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -29,12 +16,44 @@ function randomString(n) {
 	}).join('');
 }
 
-function generateRoomId () {
-	var roomId;
-	do {
-		roomId = randomString(10);
-	} while (roomFromId(roomId));
-	return roomId;
+function generateRoomId (callback) {
+	var randomId = randomString(10);
+	db.collection('rooms').findOne({ roomId: randomId }, (err, room) => {
+		checkError(err);
+
+		if (room !== null) {
+			callback(generateRoomId());
+			return;
+		}
+
+		callback(randomId);
+	});
+}
+
+function createRoom(roomData, callback) {
+	if (!roomData.roomId) {
+		generateRoomId((roomId) => {
+			roomData.roomId = roomId;
+			if (!roomData.roomName) {
+				roomData.roomName = roomData.roomId;
+			}
+
+			db.collection('rooms').insertOne(roomData, (err, room) => {
+				checkError(err);
+				callback(roomData);
+			});
+		});
+		return;
+	}
+
+	if (!roomData.roomName) {
+		roomData.roomName = roomData.roomId;
+	}
+
+	db.collection('rooms').insertOne(roomData, (err, room) => {
+		checkError(err);
+		callback(roomData);
+	});
 }
 
 
@@ -45,21 +64,32 @@ router.route('/')
 
 router.route('/create')
 	.post(function(req, res) {
-		if (req.body.roomName && roomFromName(req.body.roomName)) {
-			res.render('index.ejs', {
-				message: 'That name if taken.'
+		if (!req.body.roomName) {
+			createRoom({}, (fullRoomData) => {
+				res.redirect('/chatRoom/' + fullRoomData.roomId);
 			});
 			return;
 		}
 
-		var roomId = generateRoomId();
-		var room = {
-			id: roomId,
-			name: req.body.roomName || roomId,
-		};
-		rooms.push(room);
+		db.collection('rooms').findOne({ roomName: req.body.roomName }, (err, room) => {
+			checkError(err);
 
-		res.redirect('/chatRoom/' + room.id);
+			if (room !== null) {
+				res.render('index.ejs', {
+					message: 'That name if taken.'
+				});
+				return;
+			}
+
+			var roomData = {
+				roomName: req.body.roomName,
+			};
+
+
+			createRoom(roomData, (fullRoomData) => {
+				res.redirect('/chatRoom/' + fullRoomData.roomId);
+			});
+		});
 	});
 
 router.route('/join')
@@ -71,37 +101,41 @@ router.route('/join')
 			return;
 		}
 
-		var room = roomFromName(req.body.roomName);
-		if (room) {
-			res.redirect('/chatRoom/' + room.id);
-			return;
-		}
+		db.collection('rooms').findOne({ roomName: req.body.roomName }, (err, room) => {
+			checkError(err);
 
-		res.render('index.ejs', {
-			message: 'No room found with that name'
+			if (room !== null) {
+				res.redirect('/chatRoom/' + room.roomId);
+				return;
+			}
+
+			res.render('index.ejs', {
+				message: 'No room found with that name'
+			});
 		});
 	});
-
 
 router.route('/chatRoom/:roomId')
 	.get(function(req, res) {
 		var roomId = req.params.roomId;
-		var room = roomFromId(roomId);
-		var roomName = room ? room.name : roomId;
+		db.collection('rooms').findOne({ roomId: roomId }, (err, room) => {
+			checkError(err);
 
-		if (!room) {
-			rooms.push({
-				id: roomId,
-				name: roomName
-			});
-		}
+			var roomData = {
+				roomId,
+				roomName : room ? room.roomName : roomId,
+			};
 
-		res.render('chatRoom.ejs', {
-			roomId,
-			roomName
+			if (room === null) {
+				createRoom(roomData, (fullRoomData) => {
+					res.render('chatRoom.ejs', fullRoomData);
+				});
+				return;
+			}
+
+			res.render('chatRoom.ejs', roomData);
 		});
 	});
 
 app.use('/', router);
-
 };

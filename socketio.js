@@ -9,9 +9,7 @@
  *   socket.broadcast.to(roomId).emit('event', data);
  */
 
-module.exports = function(io, rooms) {
-
-// Helper Functions
+module.exports = function(io, db) {
 function usernameTaken(username, clients) {
 	return clients.indexOf(username) !== -1;
 }
@@ -23,7 +21,6 @@ function roomClientNames(roomId) {
 		return io.sockets.adapter.nsp.connected[id].username;
 	});
 }
-
 
 function PollsFactory() {
 	this.polls = [];
@@ -53,28 +50,24 @@ function PollsFactory() {
 	};
 }
 
-
-var PollsManager = new PollsFactory();
-
-
-// Connectiton Handler
-io.on('connection', function(socket) {
+function ioConnectionHandler(socket) {
 	var roomId = socket.handshake.query.roomId;
 	var roomName = socket.handshake.query.roomName;
-
 	var clients = roomClientNames(roomId);
 
-	for (var i = 0; usernameTaken('Guest_' + i, clients); i++) {
+	var username = 'Guest_0';
+	for (var i = 0; usernameTaken(username, clients); i++) {
+		username = 'Guest_' + i;
 	}
-	var username = 'Guest_' + i;
 
 	socket.join(roomId);
 	socket.username = username;
 
 	socket.emit('setup', {
-		clients: clients,
+		clients,
 		username: socket.username,
-		roomName: roomName
+		roomName,
+		roomId,
 	});
 
 	socket.broadcast.to(roomId).emit('userConnected', socket.username);
@@ -84,6 +77,13 @@ io.on('connection', function(socket) {
 	function emitUserDisconnect() {
 		socket.leave(roomId);
 		io.to(roomId).emit('userDisconnect', socket.username);
+		if (io.sockets.adapter.rooms[roomId] === undefined) {
+			db.collection('rooms').findOneAndDelete({ roomId }, (err, result) => {
+				if (err) {
+					throw err;
+				}
+			});
+		}
 	}
 
 	function emitUserMessage(message) {
@@ -96,9 +96,17 @@ io.on('connection', function(socket) {
 	function evaluateResults() {
 		var poll = PollsManager.exists(roomId);
 		var pollSuccess = poll.votes.yes > poll.votes.no;
+
 		if (pollSuccess) {
 			roomName = poll.name;
 			io.to(roomId).emit('newRoomName', roomName);
+			db.collection('rooms').update({ roomId }, {
+				$set: {
+					roomName: poll.name,
+				},
+			}, (err, room) => {
+				throw err;
+			});
 		}
 
 		var clientIds = Object.keys(io.sockets.adapter.rooms[roomId] || {});
@@ -192,8 +200,8 @@ io.on('connection', function(socket) {
 	socket.on('newPoll', emitNewPoll);
 	socket.on('vote', emitUserVote);
 	socket.on('usernameChange', emitUsernameChange);
-});
+}
 
-return;
-
+var PollsManager = new PollsFactory();
+io.on('connection', ioConnectionHandler);
 };

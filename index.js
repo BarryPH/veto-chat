@@ -5,6 +5,8 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
+var mongodb = require('mongodb');
+var MongoClient = mongodb.MongoClient;
 
 
 app.set('view engine', 'ejs');
@@ -24,9 +26,14 @@ app.use(function(req, res, next) {
 });
 
 
-var rooms = [];
-require('./routes/index')(app, io, rooms);
-require('./socketio.js')(io, rooms);
+MongoClient.connect('mongodb://localhost:27017/veto-chat', function(err, db) {
+	if (err) {
+		throw err;
+	}
+
+	require('./routes/index')(app, io, db);
+	require('./socketio.js')(io, db);
+});
 
 
 http.listen(3000, function() {

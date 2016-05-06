@@ -107,6 +107,7 @@ describe('socketio', function() {
 
 	it('handles votes', function(done) {
 		var runCount = 0;
+
 		client.on('vote', function(data) {
 			++runCount;
 
