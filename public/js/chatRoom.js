@@ -47,6 +47,13 @@ window.addEventListener('load', function() {
 		socket.username = data.username;
 		elements.usernameForm.username.setAttribute('placeholder', socket.username);
 
+		// Clear occupants already on the DOM in case server reset causes this
+		// function to run again
+		var children = elements.occupantList.children;
+		for (var i = 1; i < children.length; i++) {
+			children[i].parentElement.removeChild(children[i]);
+		}
+
 		for (var client of data.clients) {
 			addClientToDOM(client);
 		}
