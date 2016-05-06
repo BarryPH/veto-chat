@@ -60,60 +60,58 @@ function createRoom(roomData, callback) {
 router.route('/')
 	.get(function(req, res) {
 		res.render('index.ejs');
-	});
-
-router.route('/create')
+	})
 	.post(function(req, res) {
-		if (!req.body.roomName) {
-			createRoom({}, (fullRoomData) => {
-				res.redirect('/chatRoom/' + fullRoomData.roomId);
-			});
-			return;
-		}
-
-		db.collection('rooms').findOne({ roomName: req.body.roomName }, (err, room) => {
-			checkError(err);
-
-			if (room !== null) {
-				res.render('index.ejs', {
-					message: 'That name if taken.'
+		if (req.body.action === 'create') {
+			if (!req.body.roomToCreate) {
+				createRoom({}, (fullRoomData) => {
+					res.redirect('/chatRoom/' + fullRoomData.roomId);
 				});
 				return;
 			}
 
-			var roomData = {
-				roomName: req.body.roomName,
-			};
+			db.collection('rooms').findOne({ roomName: req.body.roomToCreate }, (err, room) => {
+				checkError(err);
+
+				if (room !== null) {
+					res.render('index.ejs', {
+						message: 'That name if taken.'
+					});
+					return;
+				}
+
+				var roomData = {
+					roomName: req.body.roomToCreate,
+				};
 
 
-			createRoom(roomData, (fullRoomData) => {
-				res.redirect('/chatRoom/' + fullRoomData.roomId);
+				createRoom(roomData, (fullRoomData) => {
+					res.redirect('/chatRoom/' + fullRoomData.roomId);
+				});
 			});
-		});
-	});
-
-router.route('/join')
-	.post(function(req, res) {
-		if (!req.body.roomName) {
-			res.render('index.ejs', {
-				message: 'Room name can\'t be blank'
-			});
-			return;
-		}
-
-		db.collection('rooms').findOne({ roomName: req.body.roomName }, (err, room) => {
-			checkError(err);
-
-			if (room !== null) {
-				res.redirect('/chatRoom/' + room.roomId);
+		} else if (req.body.action === 'join') {
+			if (!req.body.roomToJoin) {
+				res.render('index.ejs', {
+					message: 'Room name can\'t be blank'
+				});
 				return;
 			}
 
-			res.render('index.ejs', {
-				message: 'No room found with that name'
+			db.collection('rooms').findOne({ roomName: req.body.roomToJoin }, (err, room) => {
+				checkError(err);
+
+				if (room !== null) {
+					res.redirect('/chatRoom/' + room.roomId);
+					return;
+				}
+
+				res.render('index.ejs', {
+					message: 'No room found with that name'
+				});
 			});
-		});
+		}
 	});
+
 
 router.route('/chatRoom/:roomId')
 	.get(function(req, res) {

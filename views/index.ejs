@@ -14,18 +14,18 @@
 			Create a chat room for you and your friends. No mess.
 		</div>
 
-		<div id='forms'>
-			<form method='POST' action='/create'>
+		<form method='POST' action='/'>
+			<div class='option'>
 				<header>Create a room!</header>
-				<input type='text' placeholder='Roomname (optional)' name='roomName'>
-				<button type='submit'>Create Room</button>
-			</form>
+				<input type='text' placeholder='Roomname (optional)' name='roomToCreate'>
+				<button type='submit' name='action' value='create'>Create Room</button>
+			</div>
 
-			<form method='POST' action='/join'>
+			<div class='option'>
 				<header>Or join one</header>
-				<input type='text' placeholder='Roomname' name='roomName'>
-				<button type='submit'>Join Room</button>
-			</form>
-		</div>
+				<input type='text' placeholder='Roomname' name='roomToJoin'>
+				<button type='submit' name='action' value='join'>Join Room</button>
+			</div>
+		</form>
 	</section>
 </body>
