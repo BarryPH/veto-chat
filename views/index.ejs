@@ -14,18 +14,22 @@
 			Create a chat room for you and your friends. No mess.
 		</div>
 
-		<form method='POST' action='/'>
-			<div class='option'>
-				<header>Create a room!</header>
-				<input type='text' placeholder='Roomname (optional)' name='roomToCreate'>
-				<button type='submit' name='action' value='create'>Create Room</button>
+		<% if (locals.message) { %>
+			<div class='errorMessage'>
+				<%= locals.message %>
 			</div>
+		<% } %>
 
-			<div class='option'>
-				<header>Or join one</header>
-				<input type='text' placeholder='Roomname' name='roomToJoin'>
-				<button type='submit' name='action' value='join'>Join Room</button>
-			</div>
+		<form method='POST' action='/'>
+			<header>Create a room!</header>
+			<input type='text' placeholder='Roomname (optional)' name='roomToCreate'>
+			<button type='submit' name='action' value='create'>Create Room</button>
+		</form>
+
+		<form method='POST' action='/'>
+			<header>Or join one</header>
+			<input type='text' placeholder='Roomname' name='roomToJoin'>
+			<button type='submit' name='action' value='join'>Join Room</button>
 		</form>
 	</section>
 </body>
